@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/ls-security-app/ls-security-app.iml" filepath="$PROJECT_DIR$/ls-security-app/ls-security-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/ls-security-core/ls-security-core.iml" filepath="$PROJECT_DIR$/ls-security-core/ls-security-core.iml" />
     </modules>
   </component>

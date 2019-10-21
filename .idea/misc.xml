@@ -9,6 +9,7 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/ls-security-app/pom.xml" />
         <option value="$PROJECT_DIR$/ls-security-core/pom.xml" />
       </set>
     </option>
