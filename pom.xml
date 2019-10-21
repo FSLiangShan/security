@@ -13,6 +13,7 @@
         <module>ls-security-demo</module>
     </modules>
     <packaging>pom</packaging>
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -36,6 +37,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <ls.security.version>1.0-SNAPSHOT</ls.security.version>
     </properties>
     <build>
         <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
