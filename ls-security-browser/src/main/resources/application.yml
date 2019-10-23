@@ -1,0 +1,12 @@
+server:
+  port: 8060
+spring:
+  # spring session配置
+  session:
+    store-type: none
+  # mysql数据库
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://39.100.158.70:3306/my_security?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=true
+    username: root
+    password: xiaoshan

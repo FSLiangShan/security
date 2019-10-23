@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.ls.security</groupId>
             <artifactId>ls-security-core</artifactId>
-            <version>${ls.security.version}</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
