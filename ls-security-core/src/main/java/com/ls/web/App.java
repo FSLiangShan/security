@@ -1,4 +1,4 @@
-package com.ls.security;
+package com.ls.web;
 
 /**
  * Hello world!
