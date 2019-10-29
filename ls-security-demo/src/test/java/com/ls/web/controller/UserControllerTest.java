@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.web.JsonPath;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -16,6 +17,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 import static org.junit.Assert.*;
 /**
@@ -55,8 +60,12 @@ public class UserControllerTest {
         //  执行测试用例
         ResultActions resultActions = mockMvc.perform(mockHttpServletRequestBuilder);
         // 判断期望结果返回状态是否正常
-        resultActions.andExpect(MockMvcResultMatchers.status().isOk());
-        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(3));
+        String result= resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+                // 判断Json内容集合元素数量
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(3))
+                // 返回json结果为String
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(result);
     }
 
     @Test
@@ -64,8 +73,11 @@ public class UserControllerTest {
         MockHttpServletRequestBuilder mockHttpServletRequestBuilder = MockMvcRequestBuilders.get("/user/1")
                 .contentType(MediaType.APPLICATION_JSON_UTF8);
         ResultActions resultActions = mockMvc.perform(mockHttpServletRequestBuilder);
-        resultActions.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value("tom"));
+        String result = resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value("tom"))
+                // 返回json结果为String
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(result);
     }
 
     @Test
@@ -74,5 +86,26 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8);
         ResultActions resultActions = mockMvc.perform(mockHttpServletRequestBuilder);
         resultActions.andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    public void whenCreateSuccess() throws Exception {
+        Date date = new Date();
+        System.out.println(date.getTime());
+        String content = "{\"username\":\"tom\",\"password\":\"\",\"birthday\":\""+date.getTime()+"\"}";
+        MockHttpServletRequestBuilder mockHttpServletRequestBuilder = MockMvcRequestBuilders.post("/user")
+                .contentType(MediaType.APPLICATION_JSON_UTF8).content(content);
+        mockMvc.perform(mockHttpServletRequestBuilder).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void whenUpdateSuccess() throws Exception {
+        Date date = new Date(LocalDateTime.now().plusYears(1).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+
+        System.out.println(date.getTime());
+        String content = "{\"id\":\"1\",\"username\":\"tom\",\"password\":\"\",\"birthday\":\""+date.getTime()+"\"}";
+        MockHttpServletRequestBuilder mockHttpServletRequestBuilder = MockMvcRequestBuilders.put("/user/1")
+                .contentType(MediaType.APPLICATION_JSON_UTF8).content(content);
+        mockMvc.perform(mockHttpServletRequestBuilder).andExpect(MockMvcResultMatchers.status().isOk());
     }
 }
