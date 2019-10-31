@@ -101,11 +101,17 @@ public class UserControllerTest {
     @Test
     public void whenUpdateSuccess() throws Exception {
         Date date = new Date(LocalDateTime.now().plusYears(1).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-
-        System.out.println(date.getTime());
         String content = "{\"id\":\"1\",\"username\":\"tom\",\"password\":\"\",\"birthday\":\""+date.getTime()+"\"}";
         MockHttpServletRequestBuilder mockHttpServletRequestBuilder = MockMvcRequestBuilders.put("/user/1")
                 .contentType(MediaType.APPLICATION_JSON_UTF8).content(content);
         mockMvc.perform(mockHttpServletRequestBuilder).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void whenDeleteSuccess() throws Exception{
+        MockHttpServletRequestBuilder mockHttpServletRequestBuilder = MockMvcRequestBuilders.delete("/user/1")
+                .contentType(MediaType.APPLICATION_JSON_UTF8);
+        mockMvc.perform(mockHttpServletRequestBuilder).andExpect(MockMvcResultMatchers.status().isOk());
+
     }
 }
