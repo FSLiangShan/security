@@ -2,11 +2,11 @@ package com.ls.web.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ls.dto.User;
+import com.ls.exception.UserNotFoundException;
 import org.assertj.core.util.Lists;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.List;
 
@@ -36,9 +36,7 @@ public class UserController {
     @GetMapping("/{id:\\d+}")// 正则表达式限定参数
     @JsonView(User.UserDetailView.class)// 指定方法返回详细对象视图，有username和password
     public User getInfo(@PathVariable String id) {
-        User user = new User("a", "132");
-        user.setUsername("tom");
-        return user;
+        throw new UserNotFoundException(id);
     }
 
     @PutMapping("/{id:\\d+}")// 正则表达式限定参数
