@@ -2,6 +2,7 @@ package com.ls.web.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ls.dto.User;
+import io.swagger.annotations.ApiOperation;
 import org.assertj.core.util.Lists;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -40,6 +41,7 @@ public class UserController {
 
     @PutMapping("/{id:\\d+}")// 正则表达式限定参数
     @JsonView(User.UserDetailView.class)// 指定方法返回详细对象视图，有username和password
+    @ApiOperation(value = "更新用户信息 ",notes = "用户异步登录处理")
     public User update(@Valid @RequestBody User user) {
         return user;
     }

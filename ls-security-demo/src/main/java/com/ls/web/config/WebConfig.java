@@ -31,7 +31,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     /**
-    * @Description:  这个其实就是返回一个Filter类型的注册bean ，相当于在web.xml上配置bean了
+    * @Description:  这个其实就是返回一个Filter 类型的注册bean ，相当于在web.xml上配置bean了
     * @Param:
     * @return:
     * @Author: Liang Shan

@@ -27,12 +27,17 @@ public class TimeInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        // 如果不是映射到方法，直接通过
+        if (!(handler instanceof HandlerMethod)) {
+            return true;
+        }
         System.out.println("preHandle");
         // 因为是两个不同时期的方法体，所以两个方法传值需要这样使用request的attribute来传值
-        request.setAttribute("startTime",new Date().getTime());
+        request.setAttribute("startTime", new Date().getTime());
         // 而方法传入的形参 handler 就是真正进行业务处理的handler
         System.out.println("从拦截器获取的控制器类名:" + ((HandlerMethod) handler).getBean().getClass().getName());
         System.out.println("从拦截器获取的控制方法名:" + ((HandlerMethod) handler).getMethod().getName());
+
         // preHandler 的返回值 决定了后面是否还执行post Handler和 afterCompletion
         return true;
     }
@@ -46,6 +51,10 @@ public class TimeInterceptor implements HandlerInterceptor {
     */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        // 如果不是映射到方法，直接通过
+        if (!(handler instanceof HandlerMethod)) {
+            return ;
+        }
         System.out.println("postHandle");
         long startTime = (long) request.getAttribute("startTime");
         System.out.println("time interceptor 时间耗时:" + (startTime - new Date().getTime()));

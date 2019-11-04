@@ -1,6 +1,8 @@
 package com.ls.dto;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ls.validator.MyConstraint;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
@@ -15,6 +17,7 @@ import java.util.Date;
  * @author: Liang Shan
  * @create: 2019-10-28 10:37
  **/
+@ApiModel(description = "用户实体")
 public class User {
     /*用户简单视图*/
     public interface UserSimpleView {
@@ -39,14 +42,20 @@ public class User {
     }
 
 
+    @ApiModelProperty(value = "id主键", example = "1")
     private String id;
-    @MyConstraint(message = "用户名只能是小明")
-    private String username;
-    @NotBlank(message = "密码不能为空")
-    private String password;
-    @Past(message = "时间不正确")
-    private Date birthday;
 
+    @MyConstraint(message = "用户名只能是小明")
+    @ApiModelProperty(value = "用户名", example = "小明")
+    private String username;
+
+    @NotBlank(message = "密码不能为空")
+    @ApiModelProperty(value = "密码", example = "123456")
+    private String password;
+
+    @Past(message = "时间不正确")
+    @ApiModelProperty(value = "生日", example = "1995-03-25")
+    private Date birthday;
 
     @JsonView(UserSimpleView.class)
     public String getUsername() {
