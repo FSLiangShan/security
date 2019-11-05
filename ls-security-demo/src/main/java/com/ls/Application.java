@@ -1,9 +1,7 @@
 package com.ls;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
@@ -12,7 +10,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * @author: Liang Shan
  * @create: 2019-10-28 11:01
  **/
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
+//(exclude = {SecurityAutoConfiguration.class })
+@SpringBootApplication
 @EnableSwagger2
 public class Application {
     public static void main(String[] args) {

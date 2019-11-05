@@ -2,7 +2,10 @@ package com.ls.web.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ls.dto.User;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.assertj.core.util.Lists;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -52,9 +55,13 @@ public class UserController {
     }
 
     @DeleteMapping("/{id:\\d+}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "用户id主键", required = true, example ="1")
+    })
+
     public int delete(@PathVariable(value = "id")String id) {
         System.out.println(id);
         return 1;
     }
-    
+
 }
