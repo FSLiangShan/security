@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -41,8 +42,7 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     */
     @Bean
     public PasswordEncoder passwordEncoder() {
-        //return new BCryptPasswordEncoder();
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 
 
@@ -61,13 +61,27 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // 定义认证方式为表单登录
+       /* // 定义认证方式为表单登录
         http.formLogin()
                 // 定义对下列都是授权配置
                 .and().authorizeRequests()
                 // 对所有请求做授权
                 .anyRequest()
                 // 都需要身份认证
-                .authenticated();
+                .authenticated();*/
+
+        // 自定义表单登录页面配置
+        http.formLogin()
+                .loginPage("/ls-signIn.html")
+                .loginProcessingUrl("/zidingyibiaodan/form") // 放入表单登录路径
+                .and()
+                .authorizeRequests()// 表示下面的信息都是配置授权信息
+                .antMatchers("/ls-signIn.html").permitAll()// 表明匹配该url的请求允许它做任何事情，这个需要配上不然会无限重定向
+                // 对所有请求做授权
+                .anyRequest()
+                // 都需要身份认证
+                .authenticated()
+                .and()
+                .csrf().disable(); // 先暂时关闭csrf
     }
 }
