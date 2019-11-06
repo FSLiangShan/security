@@ -7,6 +7,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -51,15 +52,5 @@ public class WebConfig implements WebMvcConfigurer {
         return filterRegistrationBean;
     }
 
-    /*
-    * @author: Liang Shan
-    * @date: 2019-11-05
-    * @time: 17:28
-    * @param:
-    * @description: 先配置一下忽略了加密的，因为springboot2.x 整合security5.x
-    */
-    @Bean
-    public static NoOpPasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
-    }
+
 }
