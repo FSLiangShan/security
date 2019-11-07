@@ -39,7 +39,6 @@ public class MyUserDetailsService implements UserDetailsService {
         // 将授权的字符串变为授权对象集合
         List<GrantedAuthority> grantedAuthorityList = AuthorityUtils.commaSeparatedStringToAuthorityList("admin");
         // todo 根据用户信息判断是否合法
-
         // 使用Security自带的用户对象，已经实现了UserDetails接口,写到用户名，密码，和权限
         // 这个 passwordEncoder.encode("123456")动作是每次在注册的时候做的，因为是采用了 BCryptPasswordEncoder的加密方式，所以每一次encode()的值都是不同的，即使是一样的明文密码
         String encode = passwordEncoder.encode("123456");

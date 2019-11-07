@@ -1,5 +1,6 @@
 package com.ls.security.browser;
 
+import com.ls.security.core.SecurityProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,8 +8,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.cors.CorsUtils;
 
 /**
  * @author: Liang Shan
@@ -24,6 +25,8 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
 
+    @Autowired
+    private SecurityProperties securityProperties;
     /*
     * @author: Liang Shan
     * @date: 2019-11-06
@@ -72,16 +75,27 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 自定义表单登录页面配置
         http.formLogin()
-                .loginPage("/ls-signIn.html")
-                .loginProcessingUrl("/zidingyibiaodan/form") // 放入表单登录路径
+                .loginPage("/authentication/require")
+                // 放入表单登录路径,这样才会触发usernameAndPasswordFilter
+                .loginProcessingUrl("/zidingyibiaodan/form")
                 .and()
-                .authorizeRequests()// 表示下面的信息都是配置授权信息
-                .antMatchers("/ls-signIn.html").permitAll()// 表明匹配该url的请求允许它做任何事情，这个需要配上不然会无限重定向
+                // 表示下面的信息都是配置授权信息
+                .authorizeRequests()
+                .antMatchers("/authentication/require",
+                             securityProperties.getBrowser().getLoginPage())
+                .permitAll()
+                // 处理跨域请求中的Preflight请求
+                .requestMatchers().permitAll()
                 // 对所有请求做授权
                 .anyRequest()
                 // 都需要身份认证
                 .authenticated()
                 .and()
-                .csrf().disable(); // 先暂时关闭csrf
+                // 先暂时关闭csrf
+                .csrf().disable()
+                // 开启跨域
+                .cors();
+
     }
+
 }
