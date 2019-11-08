@@ -8,9 +8,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="ls-security-app" />
-        <module name="ls-security-demo" />
-        <module name="ls-security-core" />
         <module name="ls-security-browser" />
+        <module name="ls-security-core" />
+        <module name="ls-security-demo" />
       </profile>
     </annotationProcessing>
   </component>

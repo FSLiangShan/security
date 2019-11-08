@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.cors.CorsUtils;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 /**
  * @author: Liang Shan
@@ -49,18 +49,22 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-    /** @author: Liang Shan
-    * @date: 2019-11-06
-    * @time: 11:52
-    * @param: auth
-    * @description: 这里需要重写配置类的一个configure方法
-    *  使用我们自己的加密方式
-    *
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        // myUserDetailsService之前的自己实现UserDetailService接口的类,然后再调用自己实现的加密方式
-        auth.userDetailsService(myUserDetailsService).passwordEncoder(passwordEncoder());
-    }*/
+  /*  */
+    /**
+     * @author: Liang Shan
+     * @date: 2019-11-06
+     * @time: 11:52
+     * @param: auth
+     * @description: 这里需要重写配置类的一个configure方法
+     * 使用我们自己的加密方式
+     * @Override protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+     * // myUserDetailsService之前的自己实现UserDetailService接口的类,然后再调用自己实现的加密方式
+     * auth.userDetailsService(myUserDetailsService).passwordEncoder(passwordEncoder());
+     * }
+     */
+
+    @Autowired
+    private AuthenticationSuccessHandler myAuthenticationSuccessHandler;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -75,9 +79,10 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 自定义表单登录页面配置
         http.formLogin()
-                .loginPage("/authentication/require")
+                // .loginPage("/authentication/require")
                 // 放入表单登录路径,这样才会触发usernameAndPasswordFilter
-                .loginProcessingUrl("/zidingyibiaodan/form")
+                .loginProcessingUrl("/zidingyibiaodan/form").permitAll()
+                .successHandler(myAuthenticationSuccessHandler)
                 .and()
                 // 表示下面的信息都是配置授权信息
                 .authorizeRequests()
