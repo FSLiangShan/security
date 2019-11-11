@@ -28,7 +28,6 @@ import java.io.IOException;
 @Slf4j
 public class BrowserSecurityController {
 
-
     /** 请求缓存中可以拿到这次请求的信息*/
     private RequestCache requestCache = new HttpSessionRequestCache();
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();// spring的重定向类
@@ -46,7 +45,6 @@ public class BrowserSecurityController {
     @ResponseStatus(code = HttpStatus.UNAUTHORIZED)// 如果不是html访问则返回401未授权状态码
     public SimpleResponse requireAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
         SavedRequest savedRequest = requestCache.getRequest(request, response);
-
         if (savedRequest != null) {
             // 如果这是html请求，就跳转
             String url = savedRequest.getRedirectUrl();

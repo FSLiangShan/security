@@ -4,12 +4,15 @@ import com.ls.security.core.SecurityProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.web.cors.CorsUtils;
 
 /**
  * @author: Liang Shan
@@ -65,7 +68,8 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AuthenticationSuccessHandler myAuthenticationSuccessHandler;
-
+    @Autowired
+    private AuthenticationFailureHandler myAuthenticationFailureHandler;
     @Override
     protected void configure(HttpSecurity http) throws Exception {
        /* // 定义认证方式为表单登录
@@ -79,19 +83,24 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 自定义表单登录页面配置
         http.formLogin()
-                // .loginPage("/authentication/require")
+                .loginPage("/authentication/require")
                 // 放入表单登录路径,这样才会触发usernameAndPasswordFilter
                 .loginProcessingUrl("/zidingyibiaodan/form").permitAll()
                 .successHandler(myAuthenticationSuccessHandler)
+                .failureHandler(myAuthenticationFailureHandler
+                )
                 .and()
                 // 表示下面的信息都是配置授权信息
                 .authorizeRequests()
+                // 对匹配到的URL做放行处理
                 .antMatchers("/authentication/require",
                              securityProperties.getBrowser().getLoginPage())
                 .permitAll()
                 // 处理跨域请求中的Preflight请求
-                .requestMatchers().permitAll()
-                // 对所有请求做授权
+                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                // 对User以下的请求都做用户角色校验，必须是admin角色
+                .antMatchers(HttpMethod.POST, "/user/*").hasRole("admin")
+                // 对所有请求
                 .anyRequest()
                 // 都需要身份认证
                 .authenticated()
@@ -100,7 +109,6 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 // 开启跨域
                 .cors();
-
     }
 
 }
