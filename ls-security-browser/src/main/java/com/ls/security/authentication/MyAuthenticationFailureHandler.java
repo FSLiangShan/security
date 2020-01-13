@@ -36,6 +36,6 @@ public class MyAuthenticationFailureHandler implements AuthenticationFailureHand
         log.info("登录失败");
         httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         httpServletResponse.setContentType("application/json;charset=UTF-8");
-        httpServletResponse.getWriter().write(objectMapper.writeValueAsString(e));
+        httpServletResponse.getWriter().write(objectMapper.writeValueAsString(e.getMessage()));
     }
 }

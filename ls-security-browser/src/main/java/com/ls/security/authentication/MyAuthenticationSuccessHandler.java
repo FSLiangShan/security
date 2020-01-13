@@ -20,7 +20,6 @@ import java.io.IOException;
 public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     /*在spring mvc 启动的时候，会为我们自动注册一个序列化对象objectMapper */
-
     /*
      * @author: Liang Shan
      * @date: 2019-11-08
@@ -38,6 +37,5 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
         ObjectMapper objectMapper = new ObjectMapper();
         httpServletResponse.setContentType("application/json;charset=UTF-8");
         httpServletResponse.getWriter().write(objectMapper.writeValueAsString(authentication));
-
     }
 }

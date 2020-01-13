@@ -1,6 +1,7 @@
 package com.ls.security.browser;
 
 import com.ls.security.core.SecurityProperties;
+import com.ls.security.core.validate.code.ValidateCodeFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsUtils;
 
 /**
@@ -80,21 +82,25 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest()
                 // 都需要身份认证
                 .authenticated();*/
-
-        // 自定义表单登录页面配置
-        http.formLogin()
+        // 使用自己的自定义校验验证码过滤器
+        ValidateCodeFilter validateCodeFilter = new ValidateCodeFilter();
+        validateCodeFilter.setAuthenticationFailureHandler(myAuthenticationFailureHandler);
+        http.
+                addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class)
+                // 自定义表单登录页面配置
+                .formLogin()
                 .loginPage("/authentication/require")
                 // 放入表单登录路径,这样才会触发usernameAndPasswordFilter
                 .loginProcessingUrl("/zidingyibiaodan/form").permitAll()
                 .successHandler(myAuthenticationSuccessHandler)
-                .failureHandler(myAuthenticationFailureHandler
-                )
+                .failureHandler(myAuthenticationFailureHandler)
                 .and()
                 // 表示下面的信息都是配置授权信息
                 .authorizeRequests()
                 // 对匹配到的URL做放行处理
                 .antMatchers("/authentication/require",
-                             securityProperties.getBrowser().getLoginPage())
+                        "/code/image",
+                        securityProperties.getBrowser().getLoginPage())
                 .permitAll()
                 // 处理跨域请求中的Preflight请求
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
@@ -109,6 +115,7 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 // 开启跨域
                 .cors();
+
     }
 
 }
