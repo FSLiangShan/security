@@ -19,7 +19,7 @@ import java.util.List;
  * @date: 2019-11-05 16:17
  * @description: 实现安全框架用户登录
  */
-@Component
+@Component("userDetailService")
 @Slf4j
 public class MyUserDetailsService implements UserDetailsService {
 

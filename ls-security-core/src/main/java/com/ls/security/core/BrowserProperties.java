@@ -11,4 +11,7 @@ import lombok.Data;
 public class BrowserProperties {
     // 在这里声明一下默认的登录页
     private String loginPage = "/ls-signIn.html";
+    // RememberMeToken过期时间
+    private int rememberMeSeconds = 3600 * 24 * 7;
+
 }

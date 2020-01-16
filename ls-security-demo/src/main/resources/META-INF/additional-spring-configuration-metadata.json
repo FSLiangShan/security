@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "ls.security.browser.loginPage",
+      "type": "java.lang.String",
+      "description": "Description for ls.security.browser.loginPage."
+    }
+  ] }

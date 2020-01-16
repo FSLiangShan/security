@@ -9,12 +9,17 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.web.cors.CorsUtils;
+
+import javax.sql.DataSource;
 
 /**
  * @author: Liang Shan
@@ -28,10 +33,13 @@ import org.springframework.web.cors.CorsUtils;
 @EnableWebSecurity // spring boot 项目没有必要打上这个注解
 public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    private MyUserDetailsService myUserDetailsService;
+    private UserDetailsService userDetailService;
 
     @Autowired
     private SecurityProperties securityProperties;
+
+    @Autowired
+    private DataSource dataSource;
     /*
     * @author: Liang Shan
     * @date: 2019-11-06
@@ -54,7 +62,21 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-  /*  */
+    /**
+     * @description: 记住我功能 插入与查询数据库中的Token
+     * @author: Liang Shan
+     * @updateTime: 2020/1/13 13:46
+     * @throws:
+     */
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        // 在服务启动时自动建表
+        //tokenRepository.setCreateTableOnStartup(true);
+        return tokenRepository;
+    }
+
     /**
      * @author: Liang Shan
      * @date: 2019-11-06
@@ -67,7 +89,6 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
      * auth.userDetailsService(myUserDetailsService).passwordEncoder(passwordEncoder());
      * }
      */
-
     @Autowired
     private AuthenticationSuccessHandler myAuthenticationSuccessHandler;
     @Autowired
@@ -95,6 +116,13 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(myAuthenticationSuccessHandler)
                 .failureHandler(myAuthenticationFailureHandler)
                 .and()
+                // 配置记住我功能，配置查询数据库实例
+                .rememberMe().tokenRepository(persistentTokenRepository())
+                // 配置过期时长
+                .tokenValiditySeconds(securityProperties.getBrowser().getRememberMeSeconds())
+                // 配置userDetailService
+                .userDetailsService(userDetailService)
+                .and()
                 // 表示下面的信息都是配置授权信息
                 .authorizeRequests()
                 // 对匹配到的URL做放行处理
@@ -115,7 +143,5 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 // 开启跨域
                 .cors();
-
     }
-
 }

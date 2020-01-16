@@ -1,1 +1,11 @@
-ls.security.browser.loginPage = /demo-signIn.html
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://39.100.158.70:3306/bppt?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=true&allowMultiQueries=true
+    username: root
+    password: xiaoshan
+
+ls:
+  security:
+    browser:
+      loginPage: /demo-signIn.html
