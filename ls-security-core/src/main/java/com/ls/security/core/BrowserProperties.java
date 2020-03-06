@@ -13,5 +13,4 @@ public class BrowserProperties {
     private String loginPage = "/ls-signIn.html";
     // RememberMeToken过期时间
     private int rememberMeSeconds = 3600 * 24 * 7;
-
 }

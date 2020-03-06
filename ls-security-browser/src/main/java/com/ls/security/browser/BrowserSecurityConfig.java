@@ -1,7 +1,10 @@
 package com.ls.security.browser;
 
 import com.ls.security.core.SecurityProperties;
+import com.ls.security.core.authentication.mobile.SmsCodeAuthenticationSecurityConfig;
+import com.ls.security.core.validate.code.SmsFilter;
 import com.ls.security.core.validate.code.ValidateCodeFilter;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.web.cors.CorsUtils;
-
 import javax.sql.DataSource;
 
 /**
@@ -40,22 +42,28 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private DataSource dataSource;
+    @Autowired
+    private AuthenticationSuccessHandler myAuthenticationSuccessHandler;
+    @Autowired
+    private AuthenticationFailureHandler myAuthenticationFailureHandler;
+    @Autowired
+    private SmsCodeAuthenticationSecurityConfig smsCodeAuthenticationSecurityConfig;
+
     /*
-    * @author: Liang Shan
-    * @date: 2019-11-06
-    * @time: 11:25
-    * @param:
-    * @description: 注册一个PasswordEncoder 的实例，在后面我们只需@Autowired PasswordEncoder  就可以拿到我们实现好的方法
-    * passwordEncoder 的encode（）方法是在用户注册存入数据库时用户自己调用的，是存入数据库做加密使用的，
-    * matches（）方法就是将用户传上来的密码与数据库中的密码做匹配，返回一个布尔类型，这个是security调用的，用来在登录时验证密码是否正确的
-    * BCryptPasswordEncoder 实现了PasswordEncoder接口
-    * BCryptPasswordEncoder相关知识：
-    * 用户表的密码通常使用MD5等不可逆算法加密后存储，为防止彩虹表破解更会先使用一个特定的字符串（如域名）加密，然后再使用一个随机的salt（盐值）加密。
-    * 特定字符串是程序代码中固定的，salt是每个密码单独随机，一般给用户表加一个字段单独存储，比较麻烦。
-    * BCrypt算法将salt随机并混入最终加密后的密码，验证时也无需单独提供之前的salt，从而无需单独处理salt问题。
-    * 所以相同的明文密码，存储在数据库中，都是不同的，使得密码更加的安全，就算破解了一个，其他的密码也都会非常安全。
-    *
-    */
+     * @author: Liang Shan
+     * @date: 2019-11-06
+     * @time: 11:25
+     * @param:
+     * @description: 注册一个PasswordEncoder 的实例，在后面我们只需@Autowired PasswordEncoder  就可以拿到我们实现好的方法
+     * passwordEncoder 的encode（）方法是在用户注册存入数据库时用户自己调用的，是存入数据库做加密使用的，
+     * matches（）方法就是将用户传上来的密码与数据库中的密码做匹配，返回一个布尔类型，这个是security调用的，用来在登录时验证密码是否正确的
+     * BCryptPasswordEncoder 实现了PasswordEncoder接口
+     * BCryptPasswordEncoder相关知识：
+     * 用户表的密码通常使用MD5等不可逆算法加密后存储，为防止彩虹表破解更会先使用一个特定的字符串（如域名）加密，然后再使用一个随机的salt（盐值）加密。
+     * 特定字符串是程序代码中固定的，salt是每个密码单独随机，一般给用户表加一个字段单独存储，比较麻烦。
+     * BCrypt算法将salt随机并混入最终加密后的密码，验证时也无需单独提供之前的salt，从而无需单独处理salt问题。
+     * 所以相同的明文密码，存储在数据库中，都是不同的，使得密码更加的安全，就算破解了一个，其他的密码也都会非常安全。
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -89,10 +97,7 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
      * auth.userDetailsService(myUserDetailsService).passwordEncoder(passwordEncoder());
      * }
      */
-    @Autowired
-    private AuthenticationSuccessHandler myAuthenticationSuccessHandler;
-    @Autowired
-    private AuthenticationFailureHandler myAuthenticationFailureHandler;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
        /* // 定义认证方式为表单登录
@@ -106,7 +111,12 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
         // 使用自己的自定义校验验证码过滤器
         ValidateCodeFilter validateCodeFilter = new ValidateCodeFilter();
         validateCodeFilter.setAuthenticationFailureHandler(myAuthenticationFailureHandler);
+        // 短信验证码过滤器
+        SmsFilter smsFilter = new SmsFilter();
+        smsFilter.setAuthenticationFailureHandler(myAuthenticationFailureHandler);
+
         http.
+                addFilterBefore(smsFilter,UsernamePasswordAuthenticationFilter.class).
                 addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class)
                 // 自定义表单登录页面配置
                 .formLogin()
@@ -127,7 +137,8 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // 对匹配到的URL做放行处理
                 .antMatchers("/authentication/require",
-                        "/code/image",
+                        "/zidingyibiaodan/mobile",
+                        "/code/*",
                         securityProperties.getBrowser().getLoginPage())
                 .permitAll()
                 // 处理跨域请求中的Preflight请求
@@ -141,7 +152,10 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 // 先暂时关闭csrf
                 .csrf().disable()
+                // 加入短信验证码配置
                 // 开启跨域
-                .cors();
+                .cors()
+                .and()
+                .apply(smsCodeAuthenticationSecurityConfig);
     }
 }

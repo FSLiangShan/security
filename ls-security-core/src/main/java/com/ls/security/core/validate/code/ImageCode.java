@@ -12,27 +12,15 @@ import java.time.LocalDateTime;
  * @created: 2020/01/04 17:46
  */
 @Data
-public class ImageCode {
+public class ImageCode extends ValidateCode{
     /* 图片展示*/
     private BufferedImage image;
-    /* 验证码*/
-    private String code;
-    /* 过期时间*/
-    private LocalDateTime expireTime;
+
 
     /* expireIn 是在多少秒内过期*/
     public ImageCode(BufferedImage image, String code, int expireIn) {
+        super(code,expireIn);
         this.image = image;
-        this.code = code;
-        this.expireTime = LocalDateTime.now().plusSeconds(expireIn);
     }
 
-    /* 验证是否过期*/
-    public boolean isExpired() {
-        if (this.expireTime.isBefore(LocalDateTime.now())) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 }

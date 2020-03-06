@@ -15,6 +15,7 @@ import java.util.Random;
 public class VerifyCodeUtil {
     // 使用到Algerian字体，系统里没有的话需要安装字体，字体只显示大写，去掉了1,0,i,o几个容易混淆的字符
     public static final String VERIFY_CODES = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+    public static final String VERIFY_NUMBER = "0123456789";
     private static Random random = new Random();
 
     /**
@@ -27,6 +28,15 @@ public class VerifyCodeUtil {
         return generateVerifyCode(verifySize, VERIFY_CODES);
     }
 
+    /**
+     * @description: 生成指定位数的数字值
+     * @author: Liang Shan
+     * @updateTime: 2020/1/20 10:26
+     * @throws:
+     */
+    public static String generateVerifyNumber(int verifySize) {
+        return generateVerifyCode(verifySize, VERIFY_NUMBER);
+    }
     /**
      * @description: 使用指定的字符串生成验证码
      * @author: Liang Shan
